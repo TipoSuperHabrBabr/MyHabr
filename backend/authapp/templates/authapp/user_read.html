@@ -1,0 +1,63 @@
+{% extends 'authapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="section">
+  <!-- container -->
+  <div class="container">
+    <div class="profi_item">
+      <div class="profi_item_left">
+          Пользователь<strong>{{ object.category.first_name|title }} -
+            {{ object.username|title }}</strong><br>
+
+          {% if user.is_moderator %}
+          Вы являетесь модератором. <br>
+          {% endif %}
+          <div class="box" style="margin-top: 30px; margin-bottom: 30px;">
+            <img src="/media/{{ object.avatar|default:'default_images/default-avatar.png' }}" alt="{{ object.username }}">
+          </div>
+          <div class="post">
+            <b>О себе</b>
+            <p>{{ object.about_me }}</p>
+            <b>Пол</b>
+            <p>{{ object.gender }}</p>
+            <b>Электронная почта</b>
+            <p>{{ object.email }}</p>
+            <p>
+                {% if user.is_banned %}
+                <h4 style="color: red">За нарушение правил
+                  поведения на сайте Вы не можете оставлять комментарии
+                  до {{ object.stop_banned_time }}</h4>
+                {% endif %}
+              <button>
+                <a href={% url 'auth:edit' %}>
+                  Редактировать
+                </a>
+              </button>
+              <button>
+                <a href={% url 'index' %}>
+                  На главную
+                </a>
+              </button>
+            </p>
+          </div>
+      </div>
+      <div class="profi_item_right">
+            {% if object.is_moderator %}
+            <b>Вы являетесь модератором. <br></b>
+            <b>Ваши уведомления:</b>
+            {% for notis in notification %}
+            <li><p>{{ notis.body_text }}<a href={{ notis.path }}> Перейти</a>
+                    <a href="{% url 'authapp:notification_delete' notis.id %}">Удалить</a></p></li>
+            {% endfor %}
+            {% endif %}
+            <b>Ваши статьи:</b>
+            {% for post in posts %}
+                <li><a href="{% url 'blogapp:read_post' post.id %}">{{ post.category }} - {{ post.title }}</a></li>
+            {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
